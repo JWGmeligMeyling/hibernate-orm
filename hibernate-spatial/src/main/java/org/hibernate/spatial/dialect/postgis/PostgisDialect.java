@@ -225,6 +225,11 @@ public class PostgisDialect extends PostgreSQL82Dialect implements SpatialDialec
 				"st_transform"
 		)
 		);
+		registerFunction(
+				"setsrid", new StandardSQLFunction(
+				"st_setsrid"
+		)
+		);
 	}
 
 	@Override
