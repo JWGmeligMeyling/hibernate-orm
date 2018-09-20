@@ -26,8 +26,8 @@ publishing {
 
 	repositories {
 		maven {
-			name 'jboss-snapshots-repository'
-			url 'https://repository.jboss.org/nexus/content/repositories/snapshots'
+			name 'pallasathenagroup-snapshots-local'
+			url 'https://pallasathenagroup.jfrog.io/pallasathenagroup/libs-snapshot-local'
 		}
 	}
 }
