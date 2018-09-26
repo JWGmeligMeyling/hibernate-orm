@@ -26,8 +26,8 @@ publishing {
 
 	repositories {
 		maven {
-			name 'pallasathenagroup-snapshots-local'
-			url 'https://pallasathenagroup.jfrog.io/pallasathenagroup/libs-snapshot-local'
+			name 'libs-release-local'
+			url 'https://pallasathenagroup.jfrog.io/pallasathenagroup/libs-release-local'
 		}
 	}
 }
