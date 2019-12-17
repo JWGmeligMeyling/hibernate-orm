@@ -710,7 +710,8 @@ public class DotNode extends FromReferenceNode implements DisplayableNode, Selec
 				FromReferenceNode fromReferenceNode = (FromReferenceNode) firstChild;
 				FromElement fromElement = fromReferenceNode.getFromElement();
 				if ( fromElement != null ) {
-					String table = fromElement.getPropertyTableName( getOriginalPropertyName() );
+					String propertyPath = getPropertyPath();
+					String table = fromElement.getPropertyTableName( propertyPath );
 					if ( table != null ) {
 						referencedTables = new String[] { table };
 					}

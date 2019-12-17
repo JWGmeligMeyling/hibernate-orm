@@ -161,6 +161,10 @@ public class JoinProcessor implements SqlTokenTypes {
 			}
 		}
 
+		if ( query.getWhereClause() != null ) {
+			collectReferencedTables( new ASTIterator( query.getWhereClause() ), result );
+		}
+
 		return result;
 	}
 
