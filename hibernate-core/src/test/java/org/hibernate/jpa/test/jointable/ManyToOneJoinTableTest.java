@@ -6,6 +6,7 @@
  */
 package org.hibernate.jpa.test.jointable;
 
+import org.hibernate.annotations.NaturalId;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.query.spi.HQLQueryPlan;
@@ -15,6 +16,7 @@ import org.junit.Test;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;

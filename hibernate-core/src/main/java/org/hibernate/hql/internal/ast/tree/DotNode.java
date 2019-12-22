@@ -36,7 +36,7 @@ import antlr.collections.AST;
  *
  * @author Joshua Davis
  */
-public class DotNode extends FromReferenceNode implements DisplayableNode, SelectExpression {
+public class DotNode extends FromReferenceNode implements DisplayableNode, SelectExpression, TableReferenceNode {
 	private static final CoreMessageLogger LOG = CoreLogging.messageLogger( DotNode.class );
 
 	///////////////////////////////////////////////////////////////////////////
@@ -703,22 +703,9 @@ public class DotNode extends FromReferenceNode implements DisplayableNode, Selec
 
 	@Override
 	public String[] getReferencedTables() {
-		String[] referencedTables = null;
-		AST firstChild = getFirstChild();
-		if ( firstChild != null ) {
-			if ( firstChild instanceof FromReferenceNode ) {
-				FromReferenceNode fromReferenceNode = (FromReferenceNode) firstChild;
-				FromElement fromElement = fromReferenceNode.getFromElement();
-				if ( fromElement != null ) {
-					String propertyPath = getPropertyPath();
-					String table = fromElement.getPropertyTableName( propertyPath );
-					if ( table != null ) {
-						referencedTables = new String[] { table };
-					}
-				}
-			}
-		}
-		return referencedTables;
+		FromElement fromElement = getLhs().getFromElement();
+		String propertyTableName = fromElement.getPropertyTableName(propertyPath);
+		return new String[] {propertyTableName};
 	}
 
 	public void setPropertyPath(String propertyPath) {
