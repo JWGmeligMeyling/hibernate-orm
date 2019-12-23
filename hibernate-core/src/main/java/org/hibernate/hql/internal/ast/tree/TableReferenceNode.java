@@ -12,12 +12,12 @@ package org.hibernate.hql.internal.ast.tree;
  */
 public interface TableReferenceNode {
 
-    /**
-     * Returns table names which are referenced by this node. If the tables
-     * can not be determined it returns null.
-     *
-     * @return table names or null.
-     */
-    public String[] getReferencedTables();
+	/**
+	 * Returns table names which are referenced by this node. If the tables
+	 * can not be determined it returns null.
+	 *
+	 * @return table names or null.
+	 */
+	public String[] getReferencedTables();
 
 }
