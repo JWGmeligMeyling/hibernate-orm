@@ -704,8 +704,11 @@ public class DotNode extends FromReferenceNode implements DisplayableNode, Selec
 	@Override
 	public String[] getReferencedTables() {
 		FromElement fromElement = getLhs().getFromElement();
-		String propertyTableName = fromElement.getPropertyTableName(propertyPath);
-		return new String[] {propertyTableName};
+		if (fromElement != null) {
+			String propertyTableName = fromElement.getPropertyTableName(propertyPath);
+			return new String[] {propertyTableName};
+		}
+		return null;
 	}
 
 	public void setPropertyPath(String propertyPath) {
