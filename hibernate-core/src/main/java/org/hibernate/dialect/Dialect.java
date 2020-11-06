@@ -1357,6 +1357,17 @@ public abstract class Dialect implements ConversionContext {
 	}
 
 	/**
+	 * Is <tt>FOR UPDATE OF</tt> syntax supported for tables?
+	 *
+	 * @return True if the database supports <tt>FOR UPDATE OF</tt> syntax;
+	 * false otherwise.
+	 */
+	public boolean forUpdateOfTable() {
+		// by default we report no support
+		return false;
+	}
+
+	/**
 	 * Does this dialect support <tt>FOR UPDATE</tt> in conjunction with
 	 * outer joined rows?
 	 *

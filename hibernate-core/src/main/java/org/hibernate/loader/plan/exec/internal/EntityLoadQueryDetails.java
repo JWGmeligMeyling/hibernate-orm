@@ -233,13 +233,15 @@ public class EntityLoadQueryDetails extends AbstractLoadQueryDetails {
 
 	protected void applyRootReturnSelectFragments(SelectStatementBuilder selectStatementBuilder) {
 		final OuterJoinLoadable outerJoinLoadable = (OuterJoinLoadable) getRootEntityReturn().getEntityPersister();
+		final String tableAlias = entityReferenceAliases.getTableAlias();
 		selectStatementBuilder.appendSelectClauseFragment(
 				outerJoinLoadable.selectFragment(
-						entityReferenceAliases.getTableAlias(),
+						tableAlias,
 						entityReferenceAliases.getColumnAliases().getSuffix()
 
 				)
 		);
+		selectStatementBuilder.addLockKeyColumnNames(tableAlias, outerJoinLoadable.getIdentifierColumnNames());
 	}
 
 	private static class EntityLoaderReaderCollectorImpl extends ReaderCollectorImpl {

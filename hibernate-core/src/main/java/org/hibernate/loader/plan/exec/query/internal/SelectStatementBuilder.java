@@ -11,6 +11,10 @@ import org.hibernate.LockOptions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.internal.util.StringHelper;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Largely a copy of the {@link org.hibernate.sql.Select} class, but changed up slightly to better meet needs
  * of building a SQL SELECT statement from a LoadPlan
@@ -31,6 +35,7 @@ public class SelectStatementBuilder {
 	private StringBuilder orderByClause;
 	private String comment;
 	private LockOptions lockOptions = new LockOptions();
+	private Map<String, String[]> lockKeyColumnNames;
 
 	private int guesstimatedBufferSize = 20;
 
@@ -219,7 +224,7 @@ public class SelectStatementBuilder {
 		}
 
 		if ( lockOptions.getLockMode() != LockMode.NONE ) {
-			buf = new StringBuilder(dialect.applyLocksToSql( buf.toString(), lockOptions, null ) );
+			buf = new StringBuilder(dialect.applyLocksToSql( buf.toString(), lockOptions, lockKeyColumnNames ) );
 		}
 
 		return dialect.transformSelectString( buf.toString() );
@@ -231,5 +236,13 @@ public class SelectStatementBuilder {
 
 	private boolean isNotEmpty(StringBuilder builder) {
 		return builder != null && builder.length() > 0;
+	}
+
+	public void addLockKeyColumnNames(String alias, String[] columns) {
+		if ( lockKeyColumnNames == null ) {
+			lockKeyColumnNames = new LinkedHashMap<>();
+		}
+		lockKeyColumnNames.put(alias, columns);
+		lockOptions.setAliasSpecificLockMode(alias, lockOptions.getLockMode());
 	}
 }

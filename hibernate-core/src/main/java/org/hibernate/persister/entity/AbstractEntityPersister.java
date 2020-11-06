@@ -4303,7 +4303,7 @@ public abstract class AbstractEntityPersister
 		if ( ! factory.getSessionFactoryOptions().isDelayBatchFetchLoaderCreationsEnabled() ) {
 			for ( LockMode lockMode : LockMode.values() ) {
 				//Trigger eager initialization
-				loaders.getOrBuildByLockMode( lockMode, this::createEntityLoader );
+				loaders.getOrBuildByLockMode( lockMode, this::generateDelayedEntityLoader );
 			}
 			//Also, we have two special internal fetch profiles to eagerly initialize in this case:
 			loaders.getOrCreateByInternalFetchProfileMerge( this::buildMergeCascadeEntityLoader );
@@ -4312,7 +4312,7 @@ public abstract class AbstractEntityPersister
 		else {
 			//At least initialize this one: it's almost certain to be used,
 			//and also will allow to report mapping errors during initialization.
-			loaders.getOrBuildByLockMode( LockMode.NONE, this::createEntityLoader );
+			loaders.getOrBuildByLockMode( LockMode.NONE, this::generateDelayedEntityLoader );
 		}
 	}
 
@@ -4325,7 +4325,7 @@ public abstract class AbstractEntityPersister
 	}
 
 	protected final UniqueEntityLoader getLoaderByLockMode(LockMode lockMode) {
-		return loaders.getOrBuildByLockMode( lockMode, this::createEntityLoader );
+		return loaders.getOrBuildByLockMode( lockMode, this::generateDelayedEntityLoader );
 	}
 
 	private UniqueEntityLoader generateDelayedEntityLoader(final LockMode lockMode) {
@@ -4343,10 +4343,18 @@ public abstract class AbstractEntityPersister
 			case PESSIMISTIC_READ:
 			case PESSIMISTIC_WRITE:
 			case PESSIMISTIC_FORCE_INCREMENT: {
-				//TODO: inexact, what we really need to know is: are any outer joins used?
-				boolean disableForUpdate = getSubclassTableSpan() > 1
-						&& hasSubclasses()
-						&& !getFactory().getDialect().supportsOuterJoinForUpdate();
+				boolean hasOuterJoins = false;
+				for (int i = 0; i < getSubclassTableSpan(); i++) {
+					hasOuterJoins |= (! isClassOrSuperclassJoin(i)) || isInverseSubclassTable(i) || isNullableSubclassTable(i);
+				}
+
+				boolean disableForUpdate = hasOuterJoins
+						&& !getFactory().getJdbcServices().getDialect().supportsOuterJoinForUpdate()
+						&& !getFactory().getJdbcServices().getDialect().forUpdateOfTable();
+
+				if (disableForUpdate) {
+					LOG.infof( "Lock hint %s ignored because database dialect does not support this lock type with outer joins", lockMode );
+				}
 
 				return disableForUpdate ? getLoaderByLockMode( LockMode.READ ) : createEntityLoader( lockMode );
 			}

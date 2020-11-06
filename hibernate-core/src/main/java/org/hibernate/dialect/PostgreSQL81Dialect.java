@@ -336,6 +336,11 @@ public class PostgreSQL81Dialect extends Dialect {
 	}
 
 	@Override
+	public boolean forUpdateOfTable() {
+		return true;
+	}
+
+	@Override
 	public boolean useInputStreamToInsertBlob() {
 		return false;
 	}
@@ -648,4 +653,5 @@ public class PostgreSQL81Dialect extends Dialect {
 	public boolean supportsSelectAliasInGroupByClause() {
 		return true;
 	}
+
 }
