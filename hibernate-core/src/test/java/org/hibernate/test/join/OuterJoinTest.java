@@ -256,15 +256,14 @@ public class OuterJoinTest extends BaseCoreFunctionalTestCase {
 	}
 
 	@Test
-	@Ignore("Hibernate doesn't support implicit joins")
 	public void testJoinOrderWithRightJoinWithInnerImplicitJoins() {
 		doInJPA( this::sessionFactory, em -> {
-			List<Tuple> resultList = em.createQuery("SELECT COALESCE(a.key, b.key, c.key, d.key), a.value, b.value, c.value, d.value " +
-					"FROM A a " +
-					"INNER JOIN B b ON a.key = b.key AND a.association.value = b.association.value " +
-					"RIGHT JOIN C c ON a.key = c.key AND a.association.value = c.association.value " +
-					"INNER JOIN D d ON d.key = c.key AND d.association.value = c.association.value " +
-					"ORDER BY COALESCE(a.key, b.key, c.key, d.key) ASC", Tuple.class).getResultList();
+			List<Tuple> resultList = em.createQuery("SELECT COALESCE(a.key,b.key,c.key,d.key) AS key, a.value AS aValue, b.value AS bValue, c.value AS cValue, d.value AS dValue " +
+					"FROM A a JOIN a.association association_1 JOIN B b ON  (EXISTS (SELECT 1 FROM b.association _synth_subquery_0 WHERE a.key = b.key AND association_1.value = _synth_subquery_0.value))" +
+					"RIGHT JOIN C c ON (EXISTS (SELECT 1 FROM c.association _synth_subquery_0 WHERE a.key = c.key AND association_1.value = _synth_subquery_0.value)) " +
+					"JOIN c.association association_5 " +
+					"JOIN D d ON (EXISTS (SELECT 1 FROM d.association _synth_subquery_0 WHERE d.key = c.key AND _synth_subquery_0.value = association_5.value))" +
+					" ORDER BY COALESCE(a.key,b.key,c.key,d.key) ASC", Tuple.class).getResultList();
 
 			assertEquals(3, resultList.size());
 
